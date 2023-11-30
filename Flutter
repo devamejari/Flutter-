@@ -1,0 +1,137 @@
+#User registration and login
+pip install firebase-admin
+pip install tk
+
+import firebase_admin
+from firebase_admin import credentials, auth
+
+class FirebaseAuthenticator:
+    def __init__(self, credentials_path):
+        self.credentials_path = credentials_path
+        self.initialize_firebase()
+
+    def initialize_firebase(self):
+        cred = credentials.Certificate(self.credentials_path)
+        firebase_admin.initialize_app(cred)
+
+    def register_user(self, email, password):
+        try:
+            user = auth.create_user(email=email, password=password)
+            print("User successfully registered:", user.uid)
+        except auth.EmailAlreadyExistsError:
+            print("Email already in use")
+        except Exception as e:
+            print("Error registering user:", e)
+
+    def login_user(self, email, password):
+        try:
+            user = auth.sign_in_with_email_and_password(email, password)
+            print("User successfully logged in:", user['localId'])
+            # You can store user['localId'] in your application for future use
+        except auth.InvalidEmailError:
+            print("Invalid email")
+        except auth.WrongPasswordError:
+            print("Wrong password")
+        except Exception as e:
+            print("Error logging in user:", e)
+
+
+# Replace 'path/to/your/firebase/credentials.json', 'user@example.com', and 'password123'
+firebase_authenticator = FirebaseAuthenticator("path/to/your/firebase/credentials.json")
+firebase_authenticator.register_user('user@example.com', 'password123')
+firebase_authenticator.login_user('user@example.com', 'password123')
+
+
+
+
+
+#Grid view:
+
+import tkinter as tk
+
+window = tk.Tk()
+window.title("News App")
+
+# Define a function to toggle grid view
+def toggle_grid_view():
+    global grid_view
+    grid_view = not grid_view
+
+    if grid_view:
+        pass
+    else:
+        pass
+
+grid_button = tk.Button(window, text="Toggle Grid View", command=toggle_grid_view)
+grid_button.pack()
+
+window.mainloop()
+
+
+
+
+#News Detail View:
+
+import webbrowser
+
+#web browser
+def open_news_article(url):
+    webbrowser.open(url)
+
+    
+
+#Favorite Articles:    
+import shelve
+
+# Initialize a database for storing favorite articles
+db = shelve.open("favorite_articles")
+
+def add_to_favorites(article):
+    db[article.id] = article
+
+def remove_from_favorites(article_id):
+    del db[article_id]
+
+def get_favorite_articles():
+    return list(db.values())
+
+
+
+
+#offline support
+
+import pickle
+
+# Cache news articles to a file
+def cache_articles(articles, filename):
+    with open(filename, "wb") as f:
+        pickle.dump(articles, f)
+
+# Load cached news articles from a file
+def load_cached_articles(filename):
+    with open(filename, "rb") as f:
+        articles = pickle.load(f)
+    return articles
+
+
+
+#Design and UI/UX
+
+import tkinter as tk
+
+window = tk.Tk()
+window.title("News App")
+
+content_frame = tk.Frame(window)
+content_frame.pack()
+
+headline_label = tk.Label(content_frame, text="News Headline")
+headline_label.pack()
+
+news_content_box = tk.Text(content_frame, height=20, width=80)
+news_content_box.pack()
+
+open_article_button = tk.Button(content_frame, text="Open Article")
+open_article_button.pack()
+
+window.mainloop()
